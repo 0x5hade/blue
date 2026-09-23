@@ -28,37 +28,52 @@ int main() {
     char c = src[i];
     bool two_op = false;
 
+    // Handling new-line characters
     if (c == '\n') {
       line++;
       i++;
       continue;
     }
-    // If white-space or comment then skip.
+
+    // Skipping white spaces.
     if (c == ' ' || c == '\r' || c == '\t') {
       i++;
       continue;
     }
-    if (c == '/' && i + 1 < src.size() && src[i + 1] == '/') {
-      line++;
-      i += 2;
 
-      // we need to get to the end of the line, so we go through each char till
-      // we find \n;
-      while (c != '\n' && i < src.size()) {
-        i++;
-        c = src[i];
+    // Handling one-line comments
+    if (c == '/' && i + 1 < src.size() && (src[i + 1] == '/' || src[i+1] == '*')) {
+      char cnext = src[i+1];
+      i += 2;
+      if (cnext == '/') {
+        line++;
+
+        // we need to get to the end of the line, so we go through each char till we find \n;
+        while (c != '\n' && i < src.size()) {
+          i++;
+          c = src[i];
+        }
+        continue;
+      } else if (cnext == '*') {
+        if (c == '\n')
+          line++;
+
+        while (c != '*' && src[i+1] != '/') {
+          i++;
+          c = src[i];
+        }
+        i += 2;
+        continue;
       }
-      continue;
     }
 
-    // If !=, <=, >=, == then this is a two-char op.
+    // Check if two-char op. If !=, <=, >=, == then this is a two-char op.
     if ((c == '!' || c == '<' || c == '>' || c == '=') && i + 1 < src.size() &&
         src[i + 1] == '=') {
       two_op = true;
     }
 
-    // Handle strings, Yet to continue as it is unfinished.
-    // we start when we find a single quotation. Now, everything until we find the other one is part of the string, so we must go and continue till we find another quotation.
+    // Handling strings
     if (c == '"') {
       i++;
       c = src[i];
@@ -66,7 +81,6 @@ int main() {
       string str_literal = "";
 
       // Add the string content;
-      // "line1\nline2"
       while (c != '"' && i < src.size()) {
         if (c == '\\') {
           char cnext = src[i+1];
@@ -89,12 +103,12 @@ int main() {
               break;
           }
         } else {
-        str_lexeme += c;
-        str_literal += c;
-        i++;
+          str_lexeme += c;
+          str_literal += c;
+          i++;
         }
         if (i >= src.size()) {
-          cerr << "[Line " << line << "]" << " Error: unterminated string.\n";
+          cerr << "[line " << line << "]" << " Error: unterminated string.\n";
           continue;
         }
         c = src[i];
@@ -104,6 +118,7 @@ int main() {
       continue;
     }
 
+    // Handling operations (two-char operations and one-char operations)
     if (two_op) {
       string twochr_op = "";
       twochr_op += c;
@@ -126,7 +141,7 @@ int main() {
     // Handling keywords & Identifiers
     if ((isalpha(c) || c == '_') && i < src.size()) {
       string keyword = "";
-      while((isalpha(c) || c == '_') && i < src.size()) {
+      while((isalpha(c) || c == '_' || isdigit(c)) && i < src.size()) {
         keyword += c;
         i++;
         c = src[i];
@@ -148,11 +163,19 @@ int main() {
       i++;
     }
 
-    // check if the curr char is a number 
+    // Handling numbers 
     if (isdigit(c) && (i < src.size())) {
       // if it is, then we wanna know where the number ends. so we traverse it till the end
       string num = "";
-      while((isdigit(c) || c == '.') && i < src.size()) {
+      bool has_dot = false;
+      while((isdigit(c) || c == '.') && i < src.size()) { 
+        if (c == '.' && (has_dot || (!isdigit(src[i+1])))) {
+          // cerr << "[line " << line << "]" << " Error: Syntax error.\n";
+          break;
+        }
+
+        if (c == '.') has_dot = true;
+
         num += c;
         i++;
         c = src[i];
@@ -161,15 +184,15 @@ int main() {
       float numf = stof(num);
       if (floor(numf) == numf) {
 
-      cout << "NUMBER" << " " << num << " " << numf << ".0" << '\n';
+        cout << "NUMBER" << " " << num << " " << numf << ".0" << '\n';
       } else {
-      cout << "NUMBER" << " " << num << " " << numf << '\n';
+        cout << "NUMBER" << " " << num << " " << numf << '\n';
       }
       continue;
     } 
 
     // Otherwise, handle as an unexpected character.
-    cerr << "[Line " << line << "]" << " Error: Unexpected character: " << c << '\n';
+    cerr << "[line " << line << "]" << " Error: Unexpected character: " << c << '\n';
 
     i++;
   }
