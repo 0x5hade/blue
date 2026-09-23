@@ -41,10 +41,11 @@ int main() {
       continue;
     }
 
-    // Handling one-line comments
+    // Handling comments
     if (c == '/' && i + 1 < src.size() && (src[i + 1] == '/' || src[i+1] == '*')) {
       char cnext = src[i+1];
       i += 2;
+      // one-line comments
       if (cnext == '/') {
         line++;
 
@@ -54,11 +55,13 @@ int main() {
           c = src[i];
         }
         continue;
+        
+        // multi-line comments
       } else if (cnext == '*') {
         if (c == '\n')
           line++;
 
-        while (c != '*' && src[i+1] != '/') {
+        while (i+1 < src.size() && (!(c == '*' && src[i+1] == '/'))) {
           i++;
           c = src[i];
         }
