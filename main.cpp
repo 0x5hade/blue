@@ -6,8 +6,6 @@ using namespace std;
 // Lex source -> token stream. Output "<TYPE> <LEX> <LITERAL>" + final "EOF
 // null".
 
-// static const unordered_set<char> DIGITS = {'0','1', '2', '3', '4', '5', '6', '7', '8', '9'};
-
 static const unordered_set<string> KEYWORDS = {
     "and", "class", "else",   "false", "for",  "fun",  "if",  "nil",
     "or",  "print", "return", "super", "this", "true", "var", "while"};
@@ -21,8 +19,6 @@ static const unordered_map<string, string> DOUBLES = {{"!=", "BANG_EQUAL"},
                                                       {"==", "EQUAL_EQUAL"},
                                                       {"<=", "LESS_EQUAL"},
                                                       {">=", "GREATER_EQUAL"}};
-// Remaining: !=, ==, >=, <=, / and //
-
 int main() {
   string src((istreambuf_iterator<char>(cin)), istreambuf_iterator<char>());
   size_t i = 0;
@@ -66,23 +62,45 @@ int main() {
     if (c == '"') {
       i++;
       c = src[i];
-      string str = "";
+      string str_lexeme = "";
+      string str_literal = "";
 
       // Add the string content;
+      // "line1\nline2"
       while (c != '"' && i < src.size()) {
-        if (c == '\n') line++;
-        str += c;
+        if (c == '\\') {
+          char cnext = src[i+1];
+          str_lexeme += '\\';
+          str_lexeme  += cnext;
+          i += 2;
+          switch (cnext) {
+            case 'n':
+              str_literal += '\n';
+              line++;
+              break;
+            case 't':
+              str_literal += '\t';
+              break;
+            case '\\':
+              str_literal += '\\';
+              break;
+            case '"':
+              str_literal += '\"';
+              break;
+          }
+        } else {
+        str_lexeme += c;
+        str_literal += c;
         i++;
-
+        }
         if (i >= src.size()) {
-          cout << "Error! String literal unterminated\n";
-          return 1;
+          cerr << "[Line " << line << "]" << " Error: unterminated string.\n";
+          continue;
         }
         c = src[i];
-
       } 
       i++;
-      cout << "STRING" << " " << '"' << str << '"' << " " << str << '\n'; 
+      cout << "STRING" << " " << '"' << str_lexeme << '"' << " " << str_literal << '\n'; 
       continue;
     }
 
@@ -90,7 +108,6 @@ int main() {
       string twochr_op = "";
       twochr_op += c;
       twochr_op += src[i+1];
-      // string twochr_op(2,  string("") + c + src[i + 1]);
       auto it = DOUBLES.find(twochr_op);
       if (it != DOUBLES.end()) {
         cout << it->second << " " << twochr_op << " null\n";
@@ -106,7 +123,7 @@ int main() {
       }
     }
 
-    // abc
+    // Handling keywords & Identifiers
     if ((isalpha(c) || c == '_') && i < src.size()) {
       string keyword = "";
       while((isalpha(c) || c == '_') && i < src.size()) {
@@ -132,7 +149,6 @@ int main() {
     }
 
     // check if the curr char is a number 
-    // 13562
     if (isdigit(c) && (i < src.size())) {
       // if it is, then we wanna know where the number ends. so we traverse it till the end
       string num = "";
@@ -150,14 +166,11 @@ int main() {
       cout << "NUMBER" << " " << num << " " << numf << '\n';
       }
       continue;
-    }
+    } 
 
-    // TODO: two-char ops (!=, ==, <=, >=) and BANG/EQUAL/LESS/GREATER variants.
-    // TODO: '/' may be a SLASH or start a // comment.
-    // TODO: '"' starts a STRING literal (track newlines, error if
-    // unterminated).
-    // TODO: digit -> NUMBER (with optional fraction).
-    // TODO: alpha/_ -> IDENTIFIER, lookup in KEYWORDS.
+    // Otherwise, handle as an unexpected character.
+    cerr << "[Line " << line << "]" << " Error: Unexpected character: " << c << '\n';
+
     i++;
   }
   cout << "EOF  null\n";
