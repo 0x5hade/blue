@@ -199,8 +199,8 @@ std::vector<Token> Lexer::scanTokens(const string &src) {
       }
 
       float numf = stof(num);
-      string num_literal = "";
-      num_literal += numf;
+      string num_literal = to_string(numf);
+      // Check whether number is integer or float.
       if (floor(numf) == numf) {
         num_literal += ".0";
 
