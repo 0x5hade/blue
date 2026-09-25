@@ -22,5 +22,7 @@ int main() {
   return 0;
 }
 
+#ifndef LOCAL_DEV
 #include "parser.cpp"
 #include "lexer.cpp"
+#endif
