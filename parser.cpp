@@ -85,7 +85,7 @@ unique_ptr<Expr> Parser::term() {
 unique_ptr<Expr> Parser::factor() {
   // TODO: unary (("/"|"*") unary)*
   auto left = unary();
-  if (match({"SLASH", "STAR"})) {
+  while (match({"SLASH", "STAR"})) {
     auto b = make_unique<Binary>();
     b->left = std::move(left); 
     // b->op = tokens[i-1].type;
