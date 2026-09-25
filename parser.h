@@ -36,4 +36,5 @@ class Parser {
     Parser(const vector<Token> &tokens);
     unique_ptr<Expr> generate_ast();
     void traverse(const unique_ptr<Expr> &node);
+    bool end();
 };

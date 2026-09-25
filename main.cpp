@@ -14,11 +14,14 @@ int main() {
 
   Parser parser(tokens);
 
-  auto ast = parser.generate_ast();
-  parser.traverse(ast);
+  while (!parser.end()) {
+    auto ast = parser.generate_ast();
+    parser.traverse(ast);
+    cout << '\n';
+  }
 
 
-  
+
   return 0;
 }
 

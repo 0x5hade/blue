@@ -128,7 +128,6 @@ unique_ptr<Expr> Parser::primary() {
 }
 
 void Parser::traverse(const unique_ptr<Expr> &node) {
-  // visit -> mark visited, left, right
   if (node == nullptr) {
     return;
   }
@@ -168,9 +167,11 @@ void Parser::traverse(const unique_ptr<Expr> &node) {
     cout << ")";
   }
 
+}
 
-  // vars: node, visited stack?
-  // stop condition: when there is no more nodes to visit in the tree. if (node->left && node->right are visited?) return;
-  // visit left, visit right.
-
+bool Parser::end() {
+  if (tokens[i].type == "EOF") {
+    return true;
+  }
+  return false;
 }
