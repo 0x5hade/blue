@@ -21,3 +21,6 @@ int main() {
   
   return 0;
 }
+
+#include "parser.cpp"
+#include "lexer.cpp"

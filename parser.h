@@ -1,3 +1,4 @@
+#pragma once
 #include <bits/stdc++.h>
 #include <initializer_list>
 #include <memory>
