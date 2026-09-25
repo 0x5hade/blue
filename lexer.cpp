@@ -170,8 +170,16 @@ std::vector<Token> Lexer::scanTokens(const string &src) {
           keyword_upper += toupper(keyword[i]);
         }
 
+        string keyword_literal = "null";
+
+        if (keyword == "true") {
+          keyword_literal = "true";
+        } else if (keyword == "false") {
+          keyword_literal = "false";
+        }
+
         // cout << keyword_upper << " " << keyword << " " << "null\n";
-        addToken(keyword_upper, keyword, "null");
+        addToken(keyword_upper, keyword, keyword_literal);
         continue;
       } else {
         // cout << "IDENTIFIER" << " " << keyword << " " << "null\n";
