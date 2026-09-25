@@ -4,17 +4,17 @@
 #include <string>
 
 
-static const unordered_set<string> KEYWORDS = {
+const unordered_set<string> Lexer::KEYWORDS = {
     "and", "class", "else",   "false", "for",  "fun",  "if",  "nil",
     "or",  "print", "return", "super", "this", "true", "var", "while"};
 
-static const unordered_map<char, string> SINGLES = {
+const unordered_map<char, string> Lexer::SINGLES = {
     {'(', "LEFT_PAREN"},  {')', "RIGHT_PAREN"}, {'{', "LEFT_BRACE"},
     {'}', "RIGHT_BRACE"}, {',', "COMMA"},       {'.', "DOT"},
     {'-', "MINUS"},       {'+', "PLUS"},        {';', "SEMICOLON"},
     {'*', "STAR"},        {'/', "SLASH"}, {'=', "EQUAL"}, {'!', "BANG"}, {'<', "LESS"}, {'>', "GREATER"}};
 
-static const unordered_map<string, string> DOUBLES = {{"!=", "BANG_EQUAL"},
+const unordered_map<string, string> Lexer::DOUBLES = {{"!=", "BANG_EQUAL"},
                                                       {"==", "EQUAL_EQUAL"},
                                                       {"<=", "LESS_EQUAL"},
                                                       {">=", "GREATER_EQUAL"}};
@@ -199,7 +199,7 @@ std::vector<Token> Lexer::scanTokens(const string &src) {
       }
 
       float numf = stof(num);
-      string num_literal = to_string(numf);
+      string num_literal = num;
       // Check whether number is integer or float.
       if (floor(numf) == numf) {
         num_literal += ".0";
