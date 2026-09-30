@@ -1,5 +1,8 @@
 #include "parser.h"
 #include <memory>
+#include "bits/stdc++.h"
+
+using namespace std;
 
 Parser::Parser(const vector<Token> &tokens) {
   this->tokens = tokens;
@@ -50,7 +53,6 @@ unique_ptr<Expr> Parser::equality() {
 }
 
 unique_ptr<Expr> Parser::comparison() {
-  // TODO: term ((">"|">="|"<"|"<=") term)*
   auto left = term();
   while (match({"GREATER","GREATER_EQUAL", "LESS", "LESS_EQUAL"})) {
     auto b = make_unique<Binary>();
@@ -66,7 +68,6 @@ unique_ptr<Expr> Parser::comparison() {
 }
 
 unique_ptr<Expr> Parser::term() {
-  // TODO: factor (("-"|"+") factor)*
   auto left = factor();
   while (match({"MINUS", "PLUS"})) {
     auto b = make_unique<Binary>();
@@ -83,7 +84,6 @@ unique_ptr<Expr> Parser::term() {
 }
 
 unique_ptr<Expr> Parser::factor() {
-  // TODO: unary (("/"|"*") unary)*
   auto left = unary();
   while (match({"SLASH", "STAR"})) {
     auto b = make_unique<Binary>();
@@ -112,6 +112,7 @@ unique_ptr<Expr> Parser::primary() {
   if (match({"NUMBER","STRING","TRUE","FALSE","NIL"})) {
     auto l = make_unique<Lit>();
     l->value = tokens[i-1].literal;
+    l->type = tokens[i-1].type;
     return l;
   }
 
@@ -127,51 +128,6 @@ unique_ptr<Expr> Parser::primary() {
   throw runtime_error("Expect expression.");
 }
 
-void Parser::traverse(const unique_ptr<Expr> &node) {
-  if (node == nullptr) {
-    return;
-  }
-
-  Expr* rnode = node.get();
-  Binary *b = dynamic_cast<Binary*>(rnode);
-
-  if (b != nullptr) {
-    cout << "(" << b->op << " ";
-    traverse(b->left);
-    cout << " ";
-    traverse(b->right);
-    cout << ")";
-    return;
-  }
-
-  Unary *u = dynamic_cast<Unary*>(rnode);
-
-  if (u != nullptr) {
-    cout << "(" << u->op << " ";
-    traverse(u->right);
-    cout << ")";
-    
-    return;
-  }
-
-  Lit *l = dynamic_cast<Lit*>(rnode);
-  if (l != nullptr) {
-    cout << l->value;
-    return;
-  }
-
-  Group *g = dynamic_cast<Group*>(rnode);
-  if (g != nullptr) {
-    cout << "(group ";
-    traverse(g->expr);
-    cout << ")";
-  }
-
-}
-
 bool Parser::end() {
-  if (tokens[i].type == "EOF") {
-    return true;
-  }
-  return false;
+  return tokens[i].type == "EOF";
 }

@@ -1,6 +1,8 @@
 #pragma once
+#include "bits/stdc++.h"
 
-#include <string>
+using namespace std;
+
 
 struct Token { 
   std::string type;
@@ -8,3 +10,9 @@ struct Token {
   std::string literal; 
   int line;
 };
+
+struct Expr { virtual ~Expr() = default; };
+struct Lit  : Expr { string type;string value; };
+struct Unary: Expr { string op; unique_ptr<Expr> right; };
+struct Binary: Expr { unique_ptr<Expr> left; string op; unique_ptr<Expr> right; };
+struct Group: Expr { unique_ptr<Expr> expr; };

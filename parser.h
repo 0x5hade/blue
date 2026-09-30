@@ -6,12 +6,6 @@
 
 using namespace std;
 
-struct Expr { virtual ~Expr() = default; };
-struct Lit  : Expr { string value; };
-struct Unary: Expr { string op; unique_ptr<Expr> right; };
-struct Binary: Expr { unique_ptr<Expr> left; string op; unique_ptr<Expr> right; };
-struct Group: Expr { unique_ptr<Expr> expr; };
-
 class Parser {
   private:
     vector<Token> tokens;
@@ -35,6 +29,5 @@ class Parser {
   public:
     Parser(const vector<Token> &tokens);
     unique_ptr<Expr> generate_ast();
-    void traverse(const unique_ptr<Expr> &node);
     bool end();
 };

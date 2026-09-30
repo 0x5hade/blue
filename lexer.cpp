@@ -1,7 +1,5 @@
 #include "lexer.h"
-#include <math.h>
-#include <iostream>
-#include <string>
+#include "bits/stdc++.h"
 
 
 const unordered_set<string> Lexer::KEYWORDS = {
@@ -212,10 +210,10 @@ std::vector<Token> Lexer::scanTokens(const string &src) {
       if (floor(numf) == numf) {
         num_literal += ".0";
 
-        // cout << "NUMBER" << " " << num << " " << numd << '\n';
+        // cout << "NUMBER" << " " << num << " " << num_literal << '\n';
         addToken("NUMBER", num, num_literal);
       } else {
-        // cout << "NUMBER" << " " << num << " " << numf << '\n';
+        // cout << "NUMBER" << " " << num << " " << num_literal << '\n';
         addToken("NUMBER", num, num_literal);
       }
       continue;

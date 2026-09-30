@@ -2,6 +2,7 @@
 #include <string>
 #include "lexer.h"
 #include "parser.h"
+#include "interpreter.h"
 
 using namespace std;
 
@@ -14,10 +15,15 @@ int main() {
 
   Parser parser(tokens);
 
+  Interpreter interpreter;
+
   while (!parser.end()) {
     auto ast = parser.generate_ast();
-    parser.traverse(ast);
-    cout << '\n';
+    // interpreter.traverse(ast);
+    // cout << '\n';
+    std::variant<string, int, float, bool> value;
+    VariantValue result = interpreter.evaluate(ast);
+    interpreter.print(result);
   }
 
 
@@ -28,4 +34,5 @@ int main() {
 #ifndef LOCAL_DEV
 #include "parser.cpp"
 #include "lexer.cpp"
+#include "interpreter.cpp"
 #endif
