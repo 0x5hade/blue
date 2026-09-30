@@ -3,10 +3,13 @@
 #include <initializer_list>
 #include <memory>
 #include "token.h"
+// #include "def.h"
 
 // #define VariantValue variant<string, float, bool, monostate>
 
+#ifdef LOCAL_DEV
 using VariantValue = std::variant<std::string, float, bool, std::monostate>;
+#endif
 
 using namespace std;
 
