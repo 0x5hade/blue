@@ -35,4 +35,5 @@ int main() {
 #include "parser.cpp"
 #include "lexer.cpp"
 #include "interpreter.cpp"
+#include "online_judge.cpp" 
 #endif
