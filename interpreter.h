@@ -4,7 +4,10 @@
 #include <memory>
 #include "token.h"
 
-#define VariantValue variant<string, float, bool, monostate>
+// #define VariantValue variant<string, float, bool, monostate>
+
+using VariantValue = std::variant<std::string, float, bool, std::monostate>;
+
 using namespace std;
 
 class Interpreter {
