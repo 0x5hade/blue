@@ -84,6 +84,7 @@ VariantValue Interpreter::evaluate(const unique_ptr<Expr> &node) {
         return lnum - rnum;
       }
 
+      throw runtime_error("Runtime Error: Can not subtract different types!");
     }
 
     if (b->op == "*") {
@@ -92,14 +93,20 @@ VariantValue Interpreter::evaluate(const unique_ptr<Expr> &node) {
         float rnum = get<float>(right);
         return lnum * rnum;
       }
+      throw runtime_error("Runtime Error: Can not multiply different types!");
     }
 
     if (b->op == "/") {
       if (holds_alternative<float>(left) && holds_alternative<float>(right)) {
         float lnum = get<float>(left);
         float rnum = get<float>(right);
+
+        if (rnum == 0) {
+          throw runtime_error("Runtime Error: Can not divide over zero!");
+        }
         return lnum / rnum;
       }
+      throw runtime_error("Runtime Error: Can not divide different types!");
     }
 
   }
@@ -125,7 +132,11 @@ VariantValue Interpreter::evaluate(const unique_ptr<Expr> &node) {
         return !val;
       }
 
-      throw runtime_error("Runtime Error: Not operator can only work with booleans!");
+      if (holds_alternative<monostate>(right)) {
+        return true;
+      } else {
+        return false;
+      }
     }
   }
 
