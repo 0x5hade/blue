@@ -278,3 +278,26 @@ void Interpreter::print(VariantValue &val) {
     cout << "nil";
   }
 }
+
+void Interpreter::execute(unique_ptr<Stmt> &stmt) {
+
+  Stmt* s = stmt.get();
+  PrintStmt *ps = dynamic_cast<PrintStmt*>(s);
+  
+  if (ps != nullptr) {
+    VariantValue val = evaluate(ps->expr);
+    print(val);
+    cout << '\n';
+  }
+
+  ExprStmt *es = dynamic_cast<ExprStmt*>(s);
+  if (es != nullptr) {
+    evaluate(es->expr);
+  }
+}
+
+void Interpreter::interpret(vector<unique_ptr<Stmt>> &statements) {
+  for (unique_ptr<Stmt> &stmt : statements) {
+    execute(stmt);
+  }
+}

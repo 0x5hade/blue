@@ -1,5 +1,6 @@
 #include "parser.h"
 #include <memory>
+#include <stdexcept>
 #include "bits/stdc++.h"
 
 using namespace std;
@@ -31,9 +32,52 @@ bool Parser::match(initializer_list<string> types) {
   return false;
 }
 
+Token& Parser::consume(const string& type, const string& message) {
+  if (check(type)) {
+    return advance();
+  }
 
+  throw runtime_error("[line " + to_string(peek().line) + "] Error: " + message);
+}
 
-unique_ptr<Expr> Parser::generate_ast() { return expression(); }
+vector<unique_ptr<Stmt>> Parser::parse() {
+  vector<unique_ptr<Stmt>> statements;
+  while (!this->end()) {
+    auto s = statement();
+    statements.push_back(std::move(s));
+  }
+
+  return statements;
+}
+
+unique_ptr<Stmt> Parser::statement() {
+  if (match({"PRINT"})) {
+    return printStmt();
+  }
+  return exprStmt();
+}
+
+unique_ptr<Stmt> Parser::printStmt() {
+  unique_ptr<Expr> expr = expression();
+
+  consume("SEMICOLON", "Expected ; at the end of statement.");
+  
+  auto p = make_unique<PrintStmt>();
+  p->expr = std::move(expr);
+
+  return p;
+}
+
+unique_ptr<Stmt> Parser::exprStmt() {
+  unique_ptr<Expr> expr = expression();
+
+  consume("SEMICOLON", "Expected ; at the end of statement.");
+
+  auto p = make_unique<ExprStmt>();
+  p->expr = std::move(expr);
+  
+  return p;
+}
 
 unique_ptr<Expr> Parser::expression() { return equality(); }
 

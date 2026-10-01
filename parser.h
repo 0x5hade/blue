@@ -15,8 +15,14 @@ class Parser {
 
     Token& peek();
     Token& advance();
+    Token& consume(const string& type, const string& message);
     bool check(const string& t);
     bool match(initializer_list<string> types);
+
+    unique_ptr<Stmt> statement();
+    unique_ptr<Stmt> printStmt();
+    unique_ptr<Stmt> exprStmt();
+
 
     unique_ptr<Expr> expression();
     unique_ptr<Expr> equality();
@@ -28,6 +34,6 @@ class Parser {
 
   public:
     Parser(const vector<Token> &tokens);
-    unique_ptr<Expr> generate_ast();
+    vector<unique_ptr<Stmt>> parse();
     bool end();
 };

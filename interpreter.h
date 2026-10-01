@@ -16,5 +16,6 @@ class Interpreter {
     void traverse(const unique_ptr<Expr> &node);
     VariantValue evaluate(const unique_ptr<Expr> &node);
     void print(VariantValue &value);
-
+    void execute(unique_ptr<Stmt> &stmt);
+    void interpret(vector<unique_ptr<Stmt>> &statements);
 };

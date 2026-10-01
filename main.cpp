@@ -17,13 +17,8 @@ int main() {
 
   Interpreter interpreter;
 
-  while (!parser.end()) {
-    auto ast = parser.generate_ast();
-    // interpreter.traverse(ast);
-    // cout << '\n';
-    VariantValue result = interpreter.evaluate(ast);
-    interpreter.print(result);
-  }
+  auto statements= parser.parse();
+  interpreter.interpret(statements);
 
 
 
