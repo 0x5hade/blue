@@ -45,6 +45,43 @@ void Interpreter::traverse(const unique_ptr<Expr> &node) {
 
 }
 
+bool checkEqualEqual(VariantValue &left, VariantValue &right) {
+      if (holds_alternative<float>(left) && holds_alternative<float>(right)) {
+        float lnum = get<float>(left);
+        float rnum = get<float>(right);
+        return lnum == rnum;
+      }
+
+      if (holds_alternative<bool>(left) && holds_alternative<bool>(right)) {
+        bool lval = get<bool>(left);
+        bool rval = get<bool>(right);
+        return lval == rval;
+      }
+
+
+      if (holds_alternative<string>(left) && holds_alternative<string>(right)) {
+        string lstr = get<string>(left);
+        string rstr = get<string>(right);
+
+        if (lstr.size() != rstr.size()) return false;
+
+        for (int i = 0; i < lstr.size(); i++) {
+          if (lstr[i] != rstr[i]) {
+            return false;
+          }
+        }
+
+        return true;
+      }
+
+      if (holds_alternative<monostate>(left) && holds_alternative<monostate>(right)) {
+        return true;
+      } 
+
+      return false;
+
+}
+
 VariantValue Interpreter::evaluate(const unique_ptr<Expr> &node) {
   if (node == nullptr) {
     return monostate();
@@ -58,7 +95,6 @@ VariantValue Interpreter::evaluate(const unique_ptr<Expr> &node) {
     VariantValue right = evaluate(b->right);
     VariantValue left = evaluate(b->left);
 
-    // Add nums, concat strings
     if (b->op == "+") {
       if (holds_alternative<float>(left) && holds_alternative<float>(right)) {
         float lnum = get<float>(left);
@@ -109,6 +145,52 @@ VariantValue Interpreter::evaluate(const unique_ptr<Expr> &node) {
       throw runtime_error("Runtime Error: Can not divide different types!");
     }
 
+    if (b->op == ">") {
+      if (holds_alternative<float>(left) && holds_alternative<float>(right)) {
+        float lnum = get<float>(left);
+        float rnum = get<float>(right);
+        return lnum > rnum;
+      }
+      throw runtime_error("Runtime Error: Comparison must be between numbers!");
+    }
+
+    if (b->op == "<") {
+      if (holds_alternative<float>(left) && holds_alternative<float>(right)) {
+        float lnum = get<float>(left);
+        float rnum = get<float>(right);
+        return lnum < rnum;
+      }
+      throw runtime_error("Runtime Error: Comparison must be between numbers!");
+
+    }
+
+    if (b->op == "==") {
+      bool result = checkEqualEqual(left, right);
+      return result;
+    }
+
+    if (b->op == "!=") {
+      bool result = checkEqualEqual(left, right);
+      return !result;
+    }
+
+    if (b->op == ">=") {
+      if (holds_alternative<float>(left) && holds_alternative<float>(right)) {
+        float lnum = get<float>(left);
+        float rnum = get<float>(right);
+        return lnum >= rnum;
+      }
+
+      throw runtime_error("Runtime Error: Can only compare numbers!");
+    }
+    if (b->op == "<=") {
+      if (holds_alternative<float>(left) && holds_alternative<float>(right)) {
+        float lnum = get<float>(left);
+        float rnum = get<float>(right);
+        return rnum >= lnum;
+      }
+      throw runtime_error("Runtime Error: Can only compare numbers!");
+    }
   }
 
   Unary *u = dynamic_cast<Unary*>(rnode);
@@ -134,9 +216,9 @@ VariantValue Interpreter::evaluate(const unique_ptr<Expr> &node) {
 
       if (holds_alternative<monostate>(right)) {
         return true;
-      } else {
-        return false;
-      }
+      } 
+
+      return false;
     }
   }
 
@@ -187,7 +269,8 @@ void Interpreter::print(VariantValue &val) {
 
   if (holds_alternative<bool>(val)) {
     bool bval = get<bool>(val);
-    cout << bval;
+    string result = bval ? "true" : "false";
+    cout << result;
   }
 
   if (holds_alternative<monostate>(val)) {

@@ -21,7 +21,6 @@ int main() {
     auto ast = parser.generate_ast();
     // interpreter.traverse(ast);
     // cout << '\n';
-    std::variant<string, int, float, bool> value;
     VariantValue result = interpreter.evaluate(ast);
     interpreter.print(result);
   }
@@ -35,5 +34,4 @@ int main() {
 #include "parser.cpp"
 #include "lexer.cpp"
 #include "interpreter.cpp"
-#include "online_judge.cpp" 
 #endif
